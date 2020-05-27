@@ -9,7 +9,7 @@ export default class App extends React.Component
     this.state={
       userinput:'',
       list: [],
-      key: 0
+      length: 0
     }
   }
 
@@ -22,34 +22,60 @@ export default class App extends React.Component
 
   addList(item)
   {
+    var l=this.state.length;
+    l=l+1;
     let temp=this.state.list;
     temp.push(item);
     this.setState({list:temp});
+    this.setState({length:l});
+    document.getElementById("todoinput").value='';
   }
 
 
 
-  removeItem(e)
+  async reArrange(e)
   {
-    const removeId = e.target.getAttribute("newid"); //Im trying to identify the button pressed using newid.
-    //const user = document.querySelctor("[newid='0']"); 
-    //console.log(user); //based on newid I am selecting the li from the div 
-    console.log(removeId); 
+    const removeId = e.target.getAttribute("checkboxid");
     
+    //rearrange
+    let items=this.state.list;
+    var temp=items[this.state.length-1];
+    items[this.state.length-1]=items[removeId];
+    items[removeId]=temp;
+    this.setState({list:items})
+    
+
   }
+
+removeButton(e)
+{
+  //remove button for completed tasks
+  const removeId = e.target.getAttribute("checkboxid");
+  var ancestor =  document.getElementById('id');
+  ancestor.getElementsByTagName('LI')[this.state.length-1].style.textDecoration = "line-through";
+  ancestor.getElementsByTagName('INPUT')[this.state.length-1].remove();
+  ancestor.getElementsByTagName('INPUT')[removeId].checked =  false;
+  let l=this.state.length;
+  l=l-1;
+  this.setState({length:l})
+}
+
+
+
+
 
   render()
   {
     let counter=0;
 
-  return(<div>
-      <input value={this.state.input} onChange={(e)=>{this.setInput(e.target.value)}} ></input>
+  return(<div >
+      <input value={this.state.input} onChange={(e)=>{this.setInput(e.target.value)}} id="todoinput" ></input>
       <button onClick={()=>this.addList(this.state.userinput)}>ADD</button>
 
-      <div>
-        {this.state.list.map((val)=>
-        <div>
-          <li>{val}<input type="checkbox" id="myCheck" newid={counter++}  onChange={(e)=>this.removeItem(e)}></input></li>
+      <div id="id">
+        {this.state.list.map((val,index)=>
+        <div key={index}>
+          <li>{val}<input type="checkbox" id="myCheck" checkboxid={counter++}  onChange={(e)=>this.reArrange(e) && this.removeButton(e)}></input></li>
         </div>)
         }
       </div>
