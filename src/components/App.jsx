@@ -59,6 +59,16 @@ removeButton(e)
   let l=this.state.length;
   l=l-1;
   this.setState({length:l})
+
+  //check if list is empty
+  if(this.state.length===1)
+  {
+    console.log("stop");
+    let emptyArr=this.state.list;
+    emptyArr.length=0;
+    this.setState({list:emptyArr});
+  }
+  console.log(this.state.list);
 }
 
 
