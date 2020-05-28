@@ -53,8 +53,9 @@ removeButton(e)
   const removeId = e.target.getAttribute("checkboxid");
   var ancestor =  document.getElementById('id');
   ancestor.getElementsByTagName('LI')[this.state.length-1].style.textDecoration = "line-through";
-  ancestor.getElementsByTagName('INPUT')[this.state.length-1].remove();
   ancestor.getElementsByTagName('INPUT')[removeId].checked =  false;
+  ancestor.getElementsByTagName('INPUT')[this.state.length-1].remove();
+  
   let l=this.state.length;
   l=l-1;
   this.setState({length:l})
