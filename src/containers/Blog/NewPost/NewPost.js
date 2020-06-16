@@ -12,7 +12,8 @@ class NewPost extends Component {
         submitted: false
     }
 
-    componentDidMount () {
+componentDidMount () {
+        // If unauth => this.props.history.replace('/posts');
         console.log( this.props );
     }
 
@@ -30,11 +31,11 @@ class NewPost extends Component {
             } );
     }
 
-    render () {
+render () {
         let redirect = null;
         if (this.state.submitted) {
             redirect = <Redirect to="/posts" />;
-        }
+    }
         return (
             <div className="NewPost">
                 {redirect}
@@ -49,8 +50,8 @@ class NewPost extends Component {
                     <option value="Manu">Manu</option>
                 </select>
                 <button onClick={this.postDataHandler}>Add Post</button>
-            </div>
-        );
+         </div>
+     );
     }
 }
 
