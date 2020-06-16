@@ -7,7 +7,7 @@ import Posts from './Posts/Posts';
 import asyncComponent from '../../hoc/asyncComponent';
 // import NewPost from './NewPost/NewPost';
 
-const AsyncNewPost = asyncComponent(() => {
+const Asyncnewpost = asyncComponent(() => {
     return import('./NewPost/NewPost');
 });
 
@@ -41,7 +41,7 @@ class Blog extends Component {
                 {/* <Route path="/" exact render={() => <h1>Home</h1>} />
                 <Route path="/" render={() => <h1>Home 2</h1>} /> */}
                 <Switch>
-                    {this.state.auth ? <Route path="/new-post" component={AsyncNewPost} /> : null}
+                    {this.state.auth ? <Route path="/new-post" component={Asyncnewpost} /> : null}
                     <Route path="/posts" component={Posts} />
                     <Route render={() => <h1>Not found</h1>}/>
                     {/* <Redirect from="/" to="/posts" /> */}
