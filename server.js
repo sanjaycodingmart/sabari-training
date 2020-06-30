@@ -11,10 +11,21 @@ const passport=require('passport')
 const flash=require('express-flash')
 const session=require('express-session')
 
+const db=require('./config/database');       ////acquiring databse
+const router=express.Router();
+const User=require('./models/User')
+
+
+
+
+
 
 
 
 app.use('/public', express.static('public'));
+
+
+
 
 
 
@@ -51,10 +62,21 @@ app.get('/login',checkNotAuthenticated,(req,res)=>{
 })
 
 
-app.post('/login',checkNotAuthenticated, passport.authenticate('local',{
+app.post('/login',checkNotAuthenticated,async(req,res)=>{
+  User.findAll({
+    where: {
+        email: req.body.email //array
+    },
+    attributes: ['id', 'name','password'], //object
+})
+.then((users)=>{
+  console.log(users[0].dataValues);
+})
+}, passport.authenticate('local',{
   successRedirect:'/',
   failureRedirect:'/login',
-  failureFlash:true
+  failureFlash:true,
+
 }))
 
 
@@ -73,6 +95,13 @@ try{
     email:req.body.email,
     password:hashedPassword
   })
+  let {name,email,password}=req.body;
+  User.create({     //ENTERING DATA TO DB
+    name,
+    email,
+    password
+  })
+  .catch(err=>console.log(err))
   res.redirect('/login') 
 }
 catch
@@ -109,5 +138,23 @@ function checkNotAuthenticated(req,res,next){
 }
 
 
+//working area
+//checking db connection
 
-app.listen(3000)
+db.authenticate().then(()=>{console.log('database connected...')}).catch(err=>console.log(err))
+
+app.use('/users',require('./routes/users'))
+
+
+
+
+
+
+
+
+
+
+const PORT=process.env.PORT || 3000
+app.listen(3000,()=>{
+  console.log(`server up and running on port ${PORT}`)
+})
