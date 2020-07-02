@@ -2,104 +2,68 @@ if(process.env.NODE_ENV!=='production'){
   require('dotenv').config()
 }
 
-
-const methodOverride=require('method-override')
 const express=require('express')
 const app=express()
 const bcrypt=require('bcrypt')
-const passport=require('passport')
-const flash=require('express-flash')
 const session=require('express-session')
-
-const db=require('./config/database');       ////acquiring databse
-const router=express.Router();
+const db=require('./config/database');       
 const User=require('./models/User')
+const flash=require('express-flash')
+const checkApproved=require('./middleware/checkApproved')
 
 
-
-
-
-
+const SESSION_NAME="sid"
+const age=1000*60*60*2
+const inputData=[]
+const dbData=[]
 
 
 app.use('/public', express.static('public'));
-
-
-
-
-
-
-
-
-const initializePassport=require('./passport-config')
-initializePassport(
-  passport,
-  email=>users.find(user=>user.email===email),
-  id=>users.find(user=>user.id===id)
-)
-
-const users=[]
-
-app.set('view-engine','ejs')
-app.use(express.urlencoded({extended:false}))
 app.use(flash())
 app.use(session({
+  name:SESSION_NAME,
   secret:process.env.SESSION_SECRET,
   resave:false,
-  saveUninitialized:false
+  saveUninitialized:false,
+  cookie:{
+    maxAge:age,
+    sameSite:true
+  }
 }))
-app.use(methodOverride('_method'))
+app.set('view-engine','ejs')
+app.use(express.urlencoded({extended:false}))
 
-app.use(passport.initialize())
-app.use(passport.session())
 
-app.get('/',checkAuthenticated,(req,res)=>{
-  res.render('index.ejs',{name:req.user.name});
+app.get('/',checkApproved,(req,res)=>{
+  res.render('index.ejs');
 })
-
-app.get('/login',checkNotAuthenticated,(req,res)=>{
+app.get('/login',(req,res)=>{
   res.render('login.ejs');
 })
+app.post('/login',storeData,(req,res)=>{
 
+ setTimeout(()=>{
+  checkUserData(res,req)
+ },1000)
 
-app.post('/login',checkNotAuthenticated,async(req,res)=>{
-  User.findAll({
-    where: {
-        email: req.body.email //array
-    },
-    attributes: ['id', 'name','password'], //object
 })
-.then((users)=>{
-  console.log(users[0].dataValues);
+app.post('/logout',(req,res)=>{
+  req.session.userID=null;
+  res.redirect('/login');
+  
 })
-}, passport.authenticate('local',{
-  successRedirect:'/',
-  failureRedirect:'/login',
-  failureFlash:true,
-
-}))
-
-
-
-app.get('/register',checkNotAuthenticated,(req,res)=>{
+app.get('/register',(req,res)=>{
   res.render('register.ejs');
 })
-
-
-app.post("/register",checkNotAuthenticated, async(req,res)=>{
+app.post("/register", async(req,res)=>{
 try{
   const hashedPassword=await bcrypt.hash(req.body.password,10)
-  users.push({
-    id:Date.now().toString(),
-    name: req.body.name,
-    email:req.body.email,
-    password:hashedPassword
-  })
   let {name,email,password}=req.body;
-  User.create({     //ENTERING DATA TO DB
+  User.create({     
+    id:Date.now().toString(),
     name,
     email,
-    password
+    password:hashedPassword
   })
   .catch(err=>console.log(err))
   res.redirect('/login') 
@@ -112,41 +76,70 @@ catch
 })
 
 
-app.delete('/logout',(req,res)=>{
-  req.logOut()
-  res.redirect('/login')
-})
 
 
 
-
-
-function checkAuthenticated(req,res,next){
-  if(req.isAuthenticated())
+const checkUserData=async(res,req)=>{
+  console.log(dbData)
+  console.log(inputData)
+  if(dbData.length===0)
   {
-    return next()
+    inputData.pop();
+    console.log("no user")
+    req.flash('error','No such user')
+    res.redirect('/login')
   }
-  res.redirect('/login')
+  try{
+    if(await bcrypt.compare(inputData[0].password,dbData[0].password)){
+      inputData.pop();
+      console.log("correct password")
+      req.session.userID=dbData[0].id;
+      dbData.pop();
+      res.redirect('/')
+    }else{
+      dbData.pop();
+      inputData.pop();
+      console.log("wrong password")
+      req.flash('error','wrong password')
+      res.redirect('/login')
+    }
+  }catch(e){
+    return (e)
+  }
 }
 
-function checkNotAuthenticated(req,res,next){
-  if(req.isAuthenticated())
-  {
-    return res.redirect('/')
-  }
-  return next()
-}
 
 
-//working area
-//checking db connection
 
 db.authenticate().then(()=>{console.log('database connected...')}).catch(err=>console.log(err))
 
-app.use('/users',require('./routes/users'))
 
 
 
+function storeData(req,res,next) 
+{
+  const data={
+    email:req.body.email,
+    password:req.body.password
+  }
+  inputData.push(data)
+  User.findAll({
+      where: {
+          email: req.body.email 
+      },
+      attributes: ['id', 'name','email','password'], 
+  })
+  .then((persons)=>{
+    try{
+      dbData.push(persons[0].dataValues)
+    }catch(err)
+    {
+      console.log("no such user found")
+    }
+  })
+  console.log(req.session.userID);
+  return next()
+}
 
 
 
