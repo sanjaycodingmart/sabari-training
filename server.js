@@ -10,6 +10,8 @@ const db=require('./config/database');
 const User=require('./models/User')
 const flash=require('express-flash')
 const checkApproved=require('./middleware/checkApproved')
+const {checkRole} =require('./middleware/checkRole')
+//const {storeData}=require('./middleware/storeData')
 
 
 const SESSION_NAME="sid"
@@ -44,11 +46,13 @@ app.post('/login',storeData,(req,res)=>{
 
  setTimeout(()=>{
   checkUserData(res,req)
+
  },1000)
 
 })
 app.post('/logout',(req,res)=>{
   req.session.userID=null;
+  req.session.role=null;
   res.redirect('/login');
   
 })
@@ -63,7 +67,8 @@ try{
     id:Date.now().toString(),
     name,
     email,
-    password:hashedPassword
+    password:hashedPassword,
+    role:"basic"
   })
   .catch(err=>console.log(err))
   res.redirect('/login') 
@@ -76,6 +81,9 @@ catch
 })
 
 
+app.get('/admin',checkRole,(req,res)=>{
+  res.send('vada')
+})
 
 
 
@@ -94,6 +102,7 @@ const checkUserData=async(res,req)=>{
       inputData.pop();
       console.log("correct password")
       req.session.userID=dbData[0].id;
+      req.session.role=dbData[0].role;
       dbData.pop();
       res.redirect('/')
     }else{
@@ -127,7 +136,7 @@ function storeData(req,res,next)
       where: {
           email: req.body.email 
       },
-      attributes: ['id', 'name','email','password'], 
+      attributes: ['id', 'name','email','password','role'], 
   })
   .then((persons)=>{
     try{
