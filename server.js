@@ -11,6 +11,7 @@ const User=require('./models/User')
 const flash=require('express-flash')
 const checkApproved=require('./middleware/checkApproved')
 const {checkRole} =require('./middleware/checkRole')
+const admindb=require('./middleware/adminDb')
 //const {storeData}=require('./middleware/storeData')
 
 
@@ -81,8 +82,9 @@ catch
 })
 
 
-app.get('/admin',checkRole,(req,res)=>{
-  res.send('vada')
+app.get('/admin',checkRole,async(req,res)=>{
+  setTimeout(()=>{let blogPosts = admindb()
+    res.render('admin.ejs',{ posts: blogPosts })},2000)
 })
 
 
