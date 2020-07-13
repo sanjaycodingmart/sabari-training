@@ -14,7 +14,7 @@ const {checkRole} =require('./middleware/checkRole')
 const admindb=require('./middleware/adminDb')
 //const {storeData}=require('./middleware/storeData')
 
-
+let currentUser=null;
 const SESSION_NAME="sid"
 const age=1000*60*60*2
 const inputData=[]
@@ -38,7 +38,7 @@ app.use(express.urlencoded({extended:false}))
 
 
 app.get('/',checkApproved,(req,res)=>{
-  res.render('index.ejs');
+  res.render('index.ejs', {name:currentUser});
 })
 app.get('/login',(req,res)=>{
   res.render('login.ejs');
@@ -52,6 +52,7 @@ app.post('/login',storeData,(req,res)=>{
 
 })
 app.post('/logout',(req,res)=>{
+  currentUser=null;
   req.session.userID=null;
   req.session.role=null;
   res.redirect('/login');
@@ -82,11 +83,48 @@ catch
 })
 
 
-app.get('/admin',checkRole,async(req,res)=>{
-  setTimeout(()=>{let blogPosts = admindb()
-    res.render('admin.ejs',{ posts: blogPosts })},2000)
+app.get('/admin',checkRole,storeAdminData,async(req,res)=>{
+
+  setTimeout(()=>{
+    res.render('admin.ejs',{posts:adminDb})
+   },1000)
 })
 
+
+app.post('/roleChange',(req,res)=>{
+  let {inputId,inputRole}= req.body
+let reqUser=null
+User.findOne({ where: { id: inputId } })
+  .then(function (person) {
+    if (person) {
+      person.update({
+        role: inputRole
+      })
+      
+     }
+  })
+  setTimeout(reloadAdminDB,'1000')
+  req.flash('error','Successful Role Change')
+  res.redirect('/admin')
+})
+
+
+app.post('/deleteEmployee',(req,res)=>{
+  let {inputId,inputRole}= req.body
+let reqUser=null
+User.findOne({ where: { id: inputId } })
+  .then(function (person) {
+    if (person) {
+      person.destroy()
+      setTimeout(reloadAdminDB,'1000')
+      req.flash('error','Employee Removed')
+      res.redirect('/admin')
+    }else{
+      req.flash('error','No such Employee')
+      res.redirect('/admin')
+    }
+  })
+})
 
 
 const checkUserData=async(res,req)=>{
@@ -143,15 +181,46 @@ function storeData(req,res,next)
   .then((persons)=>{
     try{
       dbData.push(persons[0].dataValues)
+      currentUser=dbData[0].name;
+      console.log("passed")
     }catch(err)
     {
       console.log("no such user found")
     }
   })
-  console.log(req.session.userID);
+  
   return next()
 }
 
+const adminDb=[]
+function storeAdminData(req,res,next) 
+{
+  adminDb.length=0;
+  User.findAll({
+    order: [ [ 'createdAt', 'DESC' ]]
+  }).then(function(entries){
+   for(let i=0;i<entries.length;i++)
+   {
+     adminDb.push(entries[i].dataValues)
+   }
+   console.log(adminDb)
+  });
+  return next()
+}
+
+
+function reloadAdminDB()
+{
+  adminDb.length=0;
+  User.findAll({
+    order: [ [ 'createdAt', 'DESC' ]]
+  }).then(function(entries){
+   for(let i=0;i<entries.length;i++)
+   {
+     adminDb.push(entries[i].dataValues)
+   }
+  });
+}
 
 
 
