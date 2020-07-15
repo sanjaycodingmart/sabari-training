@@ -58,9 +58,10 @@ app.post('/login',storeData,(req,res)=>{
  password:req.body.password
 }
 
-//jwt goes here
 const accessToken=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+const refreshToken=jwt.sign(user,process.env.REFRESH_TOKEN_SECRET)
 res.cookie('AccessToken', accessToken, { maxAge: 8000});
+res.cookie('RefreshToken', refreshToken);
 console.log("Token generated")
 })
 
@@ -69,8 +70,12 @@ console.log("Token generated")
 
 app.post('/logout',(req,res)=>{
   currentUser=null;
-  req.session.userID=null;
   req.session.role=null;
+  const token=req.cookies['AccessToken']
+  const refreshToken=req.cookies['RefreshToken']
+  res.cookie('AccessToken', token, { maxAge: 0});
+  res.cookie('RefreshToken', refreshToken, { maxAge: 0});
+  console.log("Tokens destroyed")
   res.redirect('/login');
   
 })
@@ -99,7 +104,7 @@ catch
 })
 
 
-app.get('/admin',checkRole,storeAdminData,async(req,res)=>{
+app.get('/admin',checkApproved,checkRole,storeAdminData,async(req,res)=>{
 
   setTimeout(()=>{
     res.render('admin.ejs',{posts:adminDb})
