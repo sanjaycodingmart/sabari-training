@@ -1,7 +1,8 @@
 if(process.env.NODE_ENV!=='production'){
   require('dotenv').config()
 }
-
+var cookieParser = require('cookie-parser')
+const jwt=require('jsonwebtoken')
 const express=require('express')
 const app=express()
 const bcrypt=require('bcrypt')
@@ -12,6 +13,8 @@ const flash=require('express-flash')
 const checkApproved=require('./middleware/checkApproved')
 const {checkRole} =require('./middleware/checkRole')
 const admindb=require('./middleware/adminDb')
+const { response } = require('express')
+const { signedCookie } = require('cookie-parser')
 //const {storeData}=require('./middleware/storeData')
 
 let currentUser=null;
@@ -20,7 +23,8 @@ const age=1000*60*60*2
 const inputData=[]
 const dbData=[]
 
-
+// app.use(express.json())
+app.use(cookieParser());
 app.use('/public', express.static('public'));
 app.use(flash())
 app.use(session({
@@ -43,14 +47,26 @@ app.get('/',checkApproved,(req,res)=>{
 app.get('/login',(req,res)=>{
   res.render('login.ejs');
 })
-app.post('/login',storeData,(req,res)=>{
 
+app.post('/login',storeData,(req,res)=>{
  setTimeout(()=>{
   checkUserData(res,req)
-
  },1000)
 
+ const user={
+  name:req.body.name,
+ password:req.body.password
+}
+
+//jwt goes here
+const accessToken=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+res.cookie('AccessToken', accessToken, { maxAge: 8000});
+console.log("Token generated")
 })
+
+
+
+
 app.post('/logout',(req,res)=>{
   currentUser=null;
   req.session.userID=null;
@@ -188,7 +204,8 @@ function storeData(req,res,next)
       console.log("no such user found")
     }
   })
-  
+     //jwt goes here
+
   return next()
 }
 
