@@ -9,7 +9,7 @@ const checkApproved=async (req,res,next)=>{
         const refreshToken=req.cookies['RefreshToken']
         if(refreshToken==undefined)
         {
-          console.log("jwt verfication error for both  "+token+" "+refreshToken)
+          console.log("No acces and refresh token available"+token+" "+refreshToken)
           return res.redirect('/login')  
         }else
         {
@@ -21,12 +21,12 @@ const checkApproved=async (req,res,next)=>{
 
               const user={
                 name:req.body.name,
-               password:req.body.password
+               
               }
 
               const accessToken=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
               res.cookie('AccessToken', accessToken, { maxAge: 8000});
-              console.log('token verified after cycle')
+              console.log('new token generated and verified after cycle')
               return next()
             }
           })
