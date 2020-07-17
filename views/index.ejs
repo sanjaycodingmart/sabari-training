@@ -1,0 +1,132 @@
+<head>
+    
+    <link href="../public/assets/bootstrap.min.css" rel="stylesheet" />
+    <link href="../public/assets/light-bootstrap-dashboard.css" rel="stylesheet" />
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+  
+</head>
+
+<body style="overflow: hidden;" class="example">
+    <div class="wrapper">
+        <div class="sidebar" data-image="../assets/img/sidebar-5.jpg">
+            <!--
+        Tip 1: You can change the color of the sidebar using: data-color="purple | blue | green | orange | red"
+
+        Tip 2: you can also add an image using data-image tag
+    -->
+            <div class="sidebar-wrapper">
+                <div class="logo" style="border: 0.5px groove wheat;">
+                    <a href="javascript:;" class="simple-text">
+                        Welcome <%=name%>
+                    </a>
+                </div>
+                <ul class="nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">
+                            <i class="nc-icon nc-icon nc-paper-2"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="">
+                            <i class="nc-icon nc-bell-55"></i>
+                            <p>Edit profile</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item active active-pro">
+                        <a class="nav-link active" href="javascript:;">
+                            <i class="nc-icon nc-alien-33" style="color: white;"></i>
+                            <p style="color: white;">Upgrade plan</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg " color-on-scroll="500">
+                <div class="container-fluid">
+                    <a class="navbar-brand";" href="#pablo"></a>
+                    <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                        
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#pablo" style="color: #333131">
+                                    <span class="no-icon">Account</span>
+                                </a>
+                            </li>
+                            <li>
+ 
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="no-icon" style="color: #333131">Settings</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form action="/logout?_method=DELETE" method="POST">
+                                  <button  type="submit" >log out</button> 
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <div class="content">
+                <p id="popup1"><% if(messages.error){%>
+                    <%= messages.error %>
+                    <%} %></p>
+                <div class="container-fluid">
+                    <form action="/admin" method="GET">
+                        <button  type="submit" >switch to Admin Portal</button> 
+                      </form>
+                </div>
+            </div>
+            <footer class="footer" style="border: none; height: 65px;">
+                <div class="container-fluid">
+                    <nav>
+                        <ul class="footer-menu">
+                            <li>
+                                <a href="#">
+                                    Home
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Company
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Portfolio
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Blog
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="copyright text-center">
+                            SabariRS
+                            ©
+                            <script>
+                                document.write(new Date().getFullYear())
+                            </script>
+                        </p>
+                    </nav>
+                </div>
+            </footer>
+        </div>
+    </div>
+   
+</body>
+
+
