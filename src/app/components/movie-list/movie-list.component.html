@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="card col-md-4 col-sm-6 col-xs-12" *ngFor="let m of movies">
+    <div class="alert alert" style="cursor: pointer;" [routerLink]="['/movie-details',m.imdbID]"
+      routerLinkActive="router-link-active">
+      <div class="card-body">
+        <h5 class="card-title">{{m.Title}}</h5>
+        <p>{{m.Year}}</p>
+        <img [src]="m.Poster" [alt]="m.title" class="card-img-top">
+      </div>
+    </div>
+  </div>

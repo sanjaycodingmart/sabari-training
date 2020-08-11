@@ -1,0 +1,45 @@
+<div *ngIf="!movieDetails" class="text-center">
+  <img src="../../../assets/img/fire-trans.gif" alt="loadimgg" class="bg">
+  <h5 class="text-secondary loadingtext">Loading...</h5>
+</div>
+<div class="row" *ngIf="movieDetails">
+  <div class="col-md-4">
+    <img [src]="movieDetails.Poster" [alt]="movieDetails.Title" class="img img-thumbnail">
+  </div>
+  <div class="col-md-8">
+    <h4>{{movieDetails.Title}}</h4>
+    <table class="table table-hover">
+      <tbody>
+        <tr>
+          <td>Director</td>
+          <td>{{movieDetails.Director}}</td>
+        </tr>
+        <tr>
+          <td>Plot</td>
+          <td>{{movieDetails.Plot}}</td>
+        </tr>
+        <tr>
+          <td>Year</td>
+          <td>{{movieDetails.Year}}</td>
+        </tr>
+        <tr>
+          <td>Genre</td>
+          <td>{{movieDetails.Genre}}</td>
+        </tr>
+        <tr>
+          <td>Cast</td>
+          <td>{{movieDetails.Actors}}</td>
+        </tr>
+        <tr>
+          <td>BoxOffice</td>
+          <td>{{movieDetails.BoxOffice}}</td>
+        </tr>
+        <tr>
+          <td>Release Date</td>
+          <td>{{movieDetails.Released}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-danger" (click)="goBack()">Back</button>
+  </div>
+</div>

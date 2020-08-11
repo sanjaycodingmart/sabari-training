@@ -1,0 +1,15 @@
+<div class="alert alert-danger" style="z-index: 100; opacity: 0.7;">
+  <div class="cointainer">
+    <div class="row">
+      <div class="col-md-4">
+        <h5 [routerLink]="['/home']" style="cursor: pointer;">HOME</h5>
+      </div>
+      <div class="col-md-4">
+        <form (submit)="onHandleSubmit($event)">
+          <input type="text" name="queryTerm" autofocus placeholder="Enter movie title" class="form-control"
+            [(ngModel)]="queryTerm">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
