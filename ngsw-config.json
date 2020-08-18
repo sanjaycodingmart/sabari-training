@@ -26,5 +26,19 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "posts",
+      "urls": [
+        "https://www.omdbapi.com/?apikey=ab3e5af9&s"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "10m",
+        "timeout": "10s",
+        "strategy": "freshness"
+      }
+    }
   ]
 }
